@@ -1,0 +1,58 @@
+const path = require('path');
+
+// 指定html模板文件
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+// 清楚文件夹/文件
+// const CleanWebpackPlugin = require('clean-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+
+
+// node 模块
+module.exports = {
+  entry: "./src/index.ts",
+  output: {
+    path: path.resolve(__dirname, '../dist'),
+    filename: "[name].js",
+    // 清空打包文件目录
+    clean: true,
+    // publicPath: '/',
+  },
+  // 控制台需要打印的信息
+  stats: "error-only",
+  // 为了方便调试，配置source-map.但生产可以不需要，以压缩打包大小
+  devtool: process.env.NODE_ENV === 'production' ? false : 'inline-source-map',
+  // 可解析的文件后缀，比如import './index.js', 可以直接写import './index';
+  resolve: {
+    extensions: ['.js', 'jsx', '.ts', '.tsx']
+  },
+  // 加载器
+  module: {
+    rules: [{
+      // 匹配的文件后缀
+      test: /\.ts?$/,
+      // 匹配成功后，解析方式
+      use: 'ts-loader',
+      // 排除一些文件
+      exclude: /node_modules/
+    }]
+  },
+  // 开发服务配置
+  devServer: {
+    open: true,
+    hot: true,
+    // 不启动压缩
+    compress: false,
+    host: 'localhost',
+    port: 8089
+  },
+  // 插件配置
+  plugins: [
+    new CleanWebpackPlugin({
+      // 编译前清理指定文件夹
+      cleanOnceBeforeBuildPatterns: [path.resolve(__dirname, '../dist'),]
+    }),
+    new HtmlWebpackPlugin({
+      template: './public/index.html'
+    })
+  ]
+}
